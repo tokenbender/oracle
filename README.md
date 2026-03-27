@@ -36,11 +36,8 @@ If you want the fork in the way it is intended to be used today:
 ```bash
 git clone https://github.com/tokenbender/opencode-gpt-pro.git
 cd opencode-gpt-pro
-pnpm install
-pnpm build
-
-mkdir -p ~/.config/opencode/plugins
-cp examples/opencode/oracle-agent.js ~/.config/opencode/plugins/oracle-agent.js
+bun install
+bun run opencode:sync
 ```
 
 Then merge the recommended settings from `examples/opencode/oracle-config.json5` into `~/.oracle/config.json`.
@@ -61,6 +58,7 @@ Restart OpenCode after copying the plugin.
 ## How to read this repo
 
 - `docs/opencode.md` explains the OpenCode integration, the current context-budgeting behavior, and the install path.
+- `docs/query-aware-memory.md` lays out the next memory architecture and the current Milestone 1 extraction layer.
 - `docs/roadmap.md` states where the fork is headed and what is intentionally not changing yet.
 - `docs/configuration.md` remains the reference for Oracle config shape and now includes the recommended fork baseline.
 - `docs/bridge.md` covers the remote-browser workflow when ChatGPT lives on another machine.

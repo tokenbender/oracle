@@ -1,0 +1,79 @@
+{
+  "worktree": "/repo",
+  "session": {
+    "id": "sess-decision-files",
+    "parentID": null,
+    "title": "Bridge planning",
+    "directory": "/repo"
+  },
+  "entries": [
+    {
+      "info": {
+        "id": "msg-user-1",
+        "role": "user",
+        "agent": "opencode",
+        "model": {
+          "providerID": "openai",
+          "modelID": "gpt-5.4"
+        },
+        "summary": {
+          "title": "Plan query-aware memory",
+          "body": "Need query aware retrieval for old sessions.",
+          "diffs": [
+            {
+              "file": "docs/opencode.md",
+              "additions": 12,
+              "deletions": 0
+            }
+          ]
+        }
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "We must preserve maxFileSizeBytes. Use browser.modelStrategy current. Next step: add query aware retrieval for session history."
+        },
+        {
+          "type": "file",
+          "source": {
+            "path": "/repo/examples/opencode/oracle-agent.js"
+          }
+        },
+        {
+          "type": "tool",
+          "tool": "bash",
+          "state": {
+            "status": "completed",
+            "title": "Run tests",
+            "input": {
+              "command": "bun test tests/opencode-memory.test.js"
+            },
+            "output": "ok",
+            "attachments": [
+              {
+                "source": {
+                  "path": "/repo/docs/query-aware-memory.md"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg-assistant-1",
+        "role": "assistant",
+        "providerID": "openai",
+        "modelID": "gpt-5.4",
+        "mode": "assistant"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "I decided to keep deterministic pruning first and defer LLM summarization."
+        }
+      ]
+    }
+  ]
+}

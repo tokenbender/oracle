@@ -18,6 +18,10 @@ The OpenCode work in this fork is about turning that brittle bridge into a stabl
   - a customized OpenCode Oracle bridge plugin
   - keeps recent context richer than older context
   - trims the forwarded transcript to a byte budget before attachment
+- `examples/opencode/oracle-agent-memory.js`
+  - deterministic structured extraction for session facts
+  - local cache artifacts under `~/.oracle/opencode-memory/`
+  - compact structured memory notes included in the forwarded context
 - `examples/opencode/oracle-config.json5`
   - a starter config snippet
   - raises `maxFileSizeBytes` to 4 MB
@@ -27,11 +31,11 @@ These files are companion artifacts for a local OpenCode install. They are not y
 
 ## Install
 
-Copy the bridge plugin into your OpenCode config:
+Sync the bridge files into your OpenCode config:
 
 ```bash
-mkdir -p ~/.config/opencode/plugins
-cp examples/opencode/oracle-agent.js ~/.config/opencode/plugins/oracle-agent.js
+bun install
+bun run opencode:sync
 ```
 
 Then merge the relevant values from `examples/opencode/oracle-config.json5` into `~/.oracle/config.json`.
@@ -48,10 +52,12 @@ The OpenCode bridge uses deterministic compaction.
 2. Render the next sessions in a compact form.
 3. Render older sessions with a more aggressive summary form that removes bulky detail.
 4. Drop the oldest session blocks entirely if the bundle is still over budget.
+5. Add a deterministic structured session-memory layer for files, commands, errors, decisions, constraints, and open questions.
 
 The goal is not to produce a beautiful retrospective. The goal is to keep the consult request valid and weighted toward the context most likely to matter for the current turn.
 
 This is not LLM summarization. No extra model call is made to compress old history.
+The structured memory section is also deterministic. It is extracted from the lineage and cached locally for later retrieval work.
 
 ## Why deterministic compaction first
 

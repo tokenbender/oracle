@@ -50,6 +50,7 @@
     "test:live:fast": "ORACLE_LIVE_TEST=1 ORACLE_LIVE_TEST_FAST=1 vitest run tests/live/browser-fast-live.test.ts",
     "test:pro": "ORACLE_LIVE_TEST=1 vitest run tests/live/openai-live.test.ts",
     "test:coverage": "vitest run --coverage",
+    "opencode:sync": "node ./scripts/install-opencode-bridge.js",
     "prepare": "pnpm run build",
     "mcp": "pnpm run build && node ./dist/bin/oracle-mcp.js"
   },

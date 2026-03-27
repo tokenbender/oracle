@@ -1,0 +1,63 @@
+{
+  "worktree": "/repo",
+  "session": {
+    "id": "sess-errors-cache",
+    "parentID": "sess-decision-files",
+    "title": "Failure triage",
+    "directory": "/repo"
+  },
+  "entries": [
+    {
+      "info": {
+        "id": "msg-user-2",
+        "role": "user",
+        "agent": "opencode",
+        "model": {
+          "providerID": "openai",
+          "modelID": "gpt-5.4"
+        }
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "Do not overwrite ~/.oracle/config.json. Remaining task: preserve browser-profile reuse and investigate the 1 MB limit failure."
+        },
+        {
+          "type": "patch",
+          "files": [
+            "src/oracle/files.ts"
+          ]
+        },
+        {
+          "type": "tool",
+          "tool": "bash",
+          "state": {
+            "status": "error",
+            "input": {
+              "command": "git status && oracle --engine browser -p \"test\""
+            },
+            "error": "attached Oracle session context exceeded the 1 MB limit"
+          }
+        }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg-assistant-2",
+        "role": "assistant",
+        "providerID": "openai",
+        "modelID": "gpt-5.4",
+        "mode": "assistant",
+        "error": {
+          "message": "Oracle consult failed before it could analyze the repo"
+        }
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "Decision: prefer browser mode for GPT Pro runs. TODO: add cache-backed retrieval before semantic reranking."
+        }
+      ]
+    }
+  ]
+}

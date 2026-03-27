@@ -4,6 +4,11 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import os from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import {
+  buildStructuredMemorySection,
+  makeSessionArtifact,
+  persistSessionArtifacts,
+} from "./oracle-agent-memory.js"
 
 function parsePositiveInt(value, fallback) {
   const parsed = Number.parseInt(value ?? "", 10)
@@ -423,7 +428,7 @@ async function runOracle(binary, args, cwd, abortSignal, env = process.env) {
   })
 }
 
-function buildContextMarkdown({ args, context, lineage, lineageMessages, attachedFiles }) {
+function buildContextMarkdown({ args, context, lineage, lineageMessages, attachedFiles, sessionArtifacts }) {
   const sections = []
   sections.push("# OpenCode Oracle Bridge Context")
   sections.push("")
@@ -446,12 +451,14 @@ function buildContextMarkdown({ args, context, lineage, lineageMessages, attache
     sections.push("- No local project artifacts were auto-detected beyond this context file.")
   }
   sections.push("")
+  sections.push(...buildStructuredMemorySection(sessionArtifacts))
   sections.push("## Guidance for Oracle")
   sections.push("- Treat this file as the authoritative OpenCode transcript/history bundle.")
   sections.push("- Use the separately attached project files as source of truth for current code and artifacts.")
   sections.push("- If the transcript conflicts with current files, prefer current files and call out the mismatch.")
   sections.push("- Use the conversation/tool history below when forming your answer.")
   sections.push("- Older sessions may be compacted or omitted to keep this attachment within the size budget.")
+  sections.push("- The structured session memory section is a deterministic extraction layer, not an LLM-generated summary.")
   sections.push("")
 
   const transcriptBaseSections = [...sections, "## Session transcript", ""]
@@ -529,6 +536,23 @@ async function OracleAgentPlugin({ client }) {
 
           const manualFiles = Array.isArray(args.files) ? args.files.filter(Boolean) : []
           const autoFiles = Array.from(attachedFileSet).sort()
+          const sessionArtifacts = lineage.map((session) =>
+            makeSessionArtifact({
+              session,
+              entries: lineageMessages.get(session.id) ?? [],
+              worktree: context.worktree,
+            }),
+          )
+          let memoryCache = null
+          try {
+            memoryCache = persistSessionArtifacts({
+              oracleHomeDir,
+              worktree: context.worktree ?? context.directory,
+              sessionArtifacts,
+            })
+          } catch {
+            memoryCache = null
+          }
           const tempDir = mkdtempSync(path.join(os.tmpdir(), "opencode-oracle-"))
           const contextFile = path.join(tempDir, "opencode-session-context.md")
           const outputFile = path.join(tempDir, "oracle-output.txt")
@@ -538,6 +562,7 @@ async function OracleAgentPlugin({ client }) {
             lineage,
             lineageMessages,
             attachedFiles: autoFiles,
+            sessionArtifacts,
           })
 
           writeFileSync(contextFile, contextMarkdown)
@@ -577,6 +602,8 @@ async function OracleAgentPlugin({ client }) {
               lineage: lineage.map((session) => session.id),
               files: autoFiles.map((file) => relPath(file, context.worktree)),
               manualFiles,
+              memoryCacheDir: memoryCache?.cacheDir,
+              memorySessions: sessionArtifacts.length,
             },
           })
 
