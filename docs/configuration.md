@@ -2,6 +2,26 @@
 
 Oracle reads an optional per-user config from `~/.oracle/config.json`. The file uses JSON5 parsing, so trailing commas and comments are allowed.
 
+## Recommended baseline for this fork
+
+If you are using this repo for its intended OpenCode + GPT Pro workflow, start with a browser-first baseline and give the OpenCode handoff more room than the upstream 1 MB attachment default.
+
+```json5
+{
+  engine: "browser",
+  maxFileSizeBytes: 4194304,
+  browser: {
+    manualLogin: true,
+    modelStrategy: "current",
+    autoReattachDelayMs: 5000,
+    autoReattachIntervalMs: 3000,
+    autoReattachTimeoutMs: 60000,
+  },
+}
+```
+
+See `docs/opencode.md` for the OpenCode-specific bridge behavior that pairs with this config.
+
 ## Example (`~/.oracle/config.json`)
 
 ```json5

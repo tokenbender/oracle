@@ -1,6 +1,8 @@
-# Bridge (Windows-hosted ChatGPT session → Linux clients)
+# Bridge (Windows-hosted ChatGPT session -> Linux clients)
 
-Oracle’s bridge workflow lets you keep an authenticated ChatGPT session on a Windows machine while running Oracle (CLI + `oracle-mcp`) from Linux boxes (often over SSH), without exporting browser cookies off Windows.
+In this fork, the bridge is part of the main OpenCode story rather than a side feature. It lets the machine with your files and OpenCode stay separate from the machine that holds the signed-in ChatGPT session.
+
+Oracle's bridge workflow lets you keep an authenticated ChatGPT session on a Windows machine while running Oracle (CLI + `oracle-mcp`) from Linux boxes (often over SSH), without exporting browser cookies off Windows.
 
 ## Concepts
 
